@@ -1,4 +1,4 @@
-exports.getFolders = (req, res) => {
+const getFolders = (req, res) => {
     fs.readFile('../Modelos/folders.json', function(err, data) {
         if (err) {
             return res.status(404).send('Archivo no encontrado');
@@ -7,3 +7,5 @@ exports.getFolders = (req, res) => {
         res.send(newData.data);
     })
 }
+
+module.exports = getFolders;
