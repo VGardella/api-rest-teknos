@@ -5,3 +5,5 @@ const getFolders = require('../controllers/folders');
 // Definimos las rutas y tareas:
 
 router.get('/folders', getFolders);
+
+module.exports = router;
