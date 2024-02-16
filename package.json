@@ -1,0 +1,11 @@
+{
+  "name": "teknos-challenge",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://gogs.teknosgroup.com/vgardella/fixed-challenge.git",
+  "author": "Victoria Gardella",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
