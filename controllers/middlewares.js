@@ -2,7 +2,7 @@
 
 const userAuth = (req, res, next) => {
     if (req.params.user !== 'teknos') {
-        return res.status(404).send('Usuario incorrecto');
+        return res.status(401).send('Usuario incorrecto');
     }
     next();
 };
