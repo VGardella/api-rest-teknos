@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const getFolders = (req, res) => {
     fs.readFile('../Modelos/folders.json', function(err, data) {
         if (err) {
