@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const routes = require('./routes/index');
-const userAuth = require('./controllers/middlewares');
 
 const app = express();
 
@@ -14,7 +13,7 @@ mongoose.connect('mongodb://localhost:27017/local')
     })
 
 app.use(express.json());
-app.use('/api/:user/', userAuth, routes);
+app.use('/api/:user/', routes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
