@@ -4,11 +4,12 @@ const fromSchema = new mongoose.Schema({
     name: { type: String },
     avatar: { type: String },
     email: { type: String }
-})
+}, { _id: false });
 
 const messageSchema = new mongoose.Schema({
+    _id: { type: String },
     from: fromSchema,
-    to: [{ name: String, email: String }],
+    to: [{ name: String, email: String, _id: false }],
     subject: String,
     message: String,
     time: String,
@@ -19,6 +20,7 @@ const messageSchema = new mongoose.Schema({
     labels: [String]
 });
 
+
 const Message = new mongoose.model('challenge_messages', messageSchema);
 
-module.exports = Message
+module.exports = { Message, fromSchema };
