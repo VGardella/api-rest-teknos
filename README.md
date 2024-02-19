@@ -30,4 +30,15 @@ En este caso, se adjuntará el mensaje a publicar en la pestaña Body. En cada m
 * <b>Borrado de mensajes (Método DELETE):</b> localhost:3000/api/messages/:id
 El parámetro 'id' corresponde al código de identificación provisto para cada mensaje.
 * <b>Actualización de mensajes (Método PATCH):</b> localhost:3000/api/messages/:id. 
-Usaremos el parámetro id para identificar el mensaje a actualizar y escribiremos en la pestaña Body los campos que queramos cambiar. El formato en el que se escriben los nuevos valores es igual al usado en las queries de MongoDB: los conjuntos de clave:valor se escribiran dentro de un mismo conjunto de llaves ({}); en caso de que estemos editando un valor dentro de un subdocumento, usaremos el formato "campo.subcampo", ubicandolo entre comillas como en el ejemplo.
+Usaremos el parámetro id para identificar el mensaje a actualizar y escribiremos en la pestaña Body los campos que queramos cambiar. El formato en el que se escriben los nuevos valores es igual al usado en las queries de MongoDB: los conjuntos de clave:valor se escribiran dentro de un mismo conjunto de llaves ({}); en caso de que estemos editando un valor dentro de un subdocumento, usaremos el formato "campo.subcampo", ubicandolo entre comillas como en el ejemplo. Por otro lado, en caso de que editemos un valor dentro de un array tendremos que escribir el valor con la estructura correspondiente al array, de forma de reemplazarlo; por ejemplo, en caso de querer reemplazar un valor en el campo "to" tendremos que ponerlo como 
+
+<code>
+{
+    "to": [
+            {
+                "name": "you",
+                "email": "johndoe@creapond.com"
+            }
+        ]
+}
+</code>
