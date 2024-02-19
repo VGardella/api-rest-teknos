@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const routes = require('./routes/index');
+const messagesRouter = require('./routes/messages.routes.js');
+const foldersRouter = require('./routes/folders.routes.js');
 
 const app = express();
 
@@ -13,7 +14,8 @@ mongoose.connect('mongodb://localhost:27017/local')
     })
 
 app.use(express.json());
-app.use('/api/:user/', routes);
+app.use('/api', messagesRouter);
+app.use('/api', foldersRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
