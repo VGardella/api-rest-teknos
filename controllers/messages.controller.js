@@ -87,4 +87,21 @@ const deleteMessage = async (req, res) => {
 }
 
 
-module.exports = { getMessages, postMessage, deleteMessage };
+const updateMessage = async (req, res) => {
+    const messageId = req.params.id;
+    const changes = req.body;
+
+    if (Object.keys(changes).length === 0) {
+        return res.status(200).send('No hay cambios para realizar.');
+    }
+
+    try {
+        await Message.updateOne({ "_id": messageId }, changes);
+        return res.status(200).send('Mensaje actualizado.')
+    } catch (err) {
+        return res.status(400).send('No se pudo actualizar el mensaje.')
+    }
+}
+
+
+module.exports = { getMessages, postMessage, deleteMessage, updateMessage };
