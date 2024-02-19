@@ -7,7 +7,6 @@ const fromSchema = new mongoose.Schema({
 }, { _id: false });
 
 const messageSchema = new mongoose.Schema({
-    _id: { type: String },
     from: fromSchema,
     to: [{ name: String, email: String, _id: false }],
     subject: String,
