@@ -1,4 +1,4 @@
-const Message = require('../models/messages');
+const Message = require('../models/messages').Message;
 
 const getMessages = async (req, res) => {
     let filters = req.query;
@@ -33,8 +33,12 @@ const getMessages = async (req, res) => {
         };
     }
 
-    const list = await Message.find(query);
-    return res.send(list)
+    try {
+        const list = await Message.find(query);
+        return res.status(200).send(list)    
+    } catch (err) {
+        return res.status(500).send('No se pudo realizar la busqueda')
+    }
 }
 
 module.exports = getMessages;
