@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 
 const fromSchema = new mongoose.Schema({
-    name: { type: String },
-    avatar: { type: String },
-    email: { type: String }
+    name: String,
+    avatar: String,
+    email: String
 }, { _id: false });
 
 const messageSchema = new mongoose.Schema({
@@ -16,7 +16,8 @@ const messageSchema = new mongoose.Schema({
     starred: Boolean,
     important: Boolean,
     hasAttachments: Boolean,
-    labels: [String]
+    labels: [String],
+    folder: String
 });
 
 
