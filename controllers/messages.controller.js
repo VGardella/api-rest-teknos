@@ -50,17 +50,13 @@ const postMessage = async (req, res) => {
     let message = req.body;
 
     const messageFields = Object.keys(message);
-    const fromFields = Object.keys(message.from);
-    const fromSchemaFields = Object.keys(fromSchema.obj);
     const messageSchemaFields = Object.keys(Message.schema.obj);        
-
-    const subfields = fromSchemaFields.filter(key => !fromFields.includes(key));
+    
     const fields = messageSchemaFields.filter(key => !messageFields.includes(key));
 
-    if (subfields.length !== 0 || fields.length !== 0) {
-        return res.status(400).send(`Faltan los campos: ${subfields + ',' + fields}`);
+    if (fields.length !== 0) {
+        return res.status(400).send(`Faltan los campos: ${fields}`);
     }
-
     else {
         try {
             const newMessage = new Message(message);
@@ -68,7 +64,10 @@ const postMessage = async (req, res) => {
             return res.status(200).send('Mensaje guardado.')
         }
         catch (err) {
-            return res.status(500).send('Error al guardar el mensaje: ', err);
+            if (err == "E11000") {
+                res.status(500).send('El campo de "Id"se agrega automaticamente; borrar el valor asignado.')
+            }
+            return res.status(500).send(`Error al guardar el mensaje: ${err}`);
         }
     }
 }
