@@ -4,9 +4,9 @@ const { getMessages, postMessage, deleteMessage, updateMessage } = require('../c
 
 // Definimos las rutas y tareas:
 
-messagesRouter.get('/messages', getMessages);
-messagesRouter.post('/messages', postMessage);
-messagesRouter.delete('/messages/:id', deleteMessage);
-messagesRouter.patch('/messages/:id', updateMessage);
+messagesRouter.get('/', getMessages);
+messagesRouter.post('/', postMessage);
+messagesRouter.delete('/:id', deleteMessage);
+messagesRouter.put('/:id', updateMessage);
 
 module.exports = messagesRouter;
