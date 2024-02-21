@@ -1,10 +1,14 @@
 const Message = require('../models/messages.model.js').Message;
 
 const getMessages = async (req, res) => {
+    // Variables:
     let filters = req.query;
     let query = { $and: [] };
+    let mails;
+    let mailList;
 
-    if (filters.from !== undefined) {
+    // Lógica de filtrado:
+    if (filters.from && filters.from !== undefined) {
         query.$and.push({ 
             $or: [
                 { "from.name": { $regex: `${filters.from}`, $options: "i"}},
@@ -14,7 +18,7 @@ const getMessages = async (req, res) => {
         })
     };
 
-    if (filters.to !== undefined) {
+    if (filters.to && filters.to !== undefined) {
         query.$and.push({
             $or: [
                 { "to.name": { $regex: `${filters.to}`, $options: "i"}},
@@ -23,37 +27,72 @@ const getMessages = async (req, res) => {
         })
     };
 
-    if (filters.subject !== undefined) {
+    if (filters.subject && filters.subject !== undefined) {
         query.$and.push({
             "subject": { $regex: `${filters.subject}`, $options: "i"}
         })
     };
 
-    if (Object.keys(filters).length === 0) {
+    if (!filters.from && !filters.to && !filters.subject) {
         delete query.$and;
     }
 
-    try {
-        const list = await Message.aggregate([
-            { $match: query },
-            { $lookup : {
-                    "from" : "challenge_folders",
-                    "localField" : "folder",
-                    "foreignField" : "name",
-                    "as" : "folderInfo"
-                }
-            }
-        ]);
+    // Lógica de paginación:
+    if (!filters.page && filters.limit || filters.page && !filters.limit) {
+        return res.status(500).send('Para paginado de los mensajes especificar número de página (page) y número de mensajes (limit)')
+    }
+    else if (filters.page && filters.limit) {
+        mails = (parseInt(filters.page)-1)*parseInt(filters.limit);
+    }
 
-        if (list.length === 0) {
+
+    try {
+        if (filters.page && filters.limit) {
+
+            const mailPage = await Message.aggregate([
+                { $match: query },
+                { $lookup : {
+                        "from" : "challenge_folders",
+                        "localField" : "folder",
+                        "foreignField" : "name",
+                        "as" : "folderInfo"
+                    }
+                },
+                { $skip: mails },
+                { $limit: parseInt(filters.limit) }
+            ])
+    
+            const count = await Message.aggregate([
+                { $match: query },
+                { $count: "count" }
+            ])
+    
+            mailList = {
+                count: count[0].count,
+                page: parseInt(filters.page),
+                data: mailPage
+            };
+        }  else {
+            mailList = await Message.aggregate([
+                { $match: query },
+                { $lookup : {
+                        "from" : "challenge_folders",
+                        "localField" : "folder",
+                        "foreignField" : "name",
+                        "as" : "folderInfo"
+                    }
+                }
+            ]);
+        }
+
+        if (mailList.length === 0) {
             return res.status(200).send('No se encontraron mensajes.')
         }
-        return res.status(200).send(list)    
+        return res.status(200).send(mailList)    
     } catch (err) {
         return res.status(500).send('No se pudo realizar la busqueda.')
     }
 }
-
 
 const postMessage = async (req, res) => {
     let message = req.body;
@@ -127,72 +166,5 @@ const countMail = async (req, res) => {
 }
 
 
-const paginateMail = async (req, res) => {
-    const { page, limit } = req.params;
-    const mails = (parseInt(page)-1)*parseInt(limit);
 
-    let filters = req.query;
-    let query = { $and: [] };
-
-    if (filters.from !== undefined) {
-        query.$and.push({ 
-            $or: [
-                { "from.name": { $regex: `${filters.from}`, $options: "i"}},
-                { "from.avatar": { $regex: `${filters.from}`, $options: "i"}},
-                { "from.email": { $regex: `${filters.from}`, $options: "i"}},
-            ]
-        })
-    };
-
-    if (filters.to !== undefined) {
-        query.$and.push({
-            $or: [
-                { "to.name": { $regex: `${filters.to}`, $options: "i"}},
-                { "to.email": { $regex: `${filters.to}`, $options: "i"}}
-            ]
-        })
-    };
-
-    if (filters.subject !== undefined) {
-        query.$and.push({
-            "subject": { $regex: `${filters.subject}`, $options: "i"}
-        })
-    };
-
-    if (Object.keys(filters).length === 0) {
-        delete query.$and;
-    }
-
-    try {
-        const mailPage = await Message.aggregate([
-            { $match: query },
-            { $lookup : {
-                    "from" : "challenge_folders",
-                    "localField" : "folder",
-                    "foreignField" : "name",
-                    "as" : "folderInfo"
-                }
-            },
-            { $skip: mails },
-            { $limit: parseInt(limit) }
-        ])
-
-        const count = await Message.aggregate([
-            { $match: query },
-            { $count: "count" }
-        ])
-
-        const mailList = {
-            count: count[0].count,
-            page: parseInt(page),
-            data: mailPage
-        };
-
-        return res.status(200).json(mailList);
-    } catch (err) {
-        return res.status(500).send('Error al cargar los mensajes.')
-    }
-}
-
-
-module.exports = { getMessages, postMessage, deleteMessage, updateMessage, countMail, paginateMail };
+module.exports = { getMessages, postMessage, deleteMessage, updateMessage, countMail };
